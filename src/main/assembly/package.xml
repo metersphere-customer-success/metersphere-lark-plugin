@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0">
+    <id>all-hook</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/classes</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>false</unpack><!--这里一定要注意,一定要加上，不然结果就会变成jar包里面是jar包，而不是散的class-->
+            <scope>runtime</scope>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>
