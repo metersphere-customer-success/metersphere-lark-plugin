@@ -12,7 +12,7 @@ public class LarkWorkItemRequest {
     private String work_item_name;
     private List<String> user_keys;
     private List<String> work_item_type_keys;
-    private List<Integer> work_item_ids;
+    private List<Long> work_item_ids;
     private LarkTimeInterval created_at;
     private LarkTimeInterval updated_at;
     private List<String> sub_stages;

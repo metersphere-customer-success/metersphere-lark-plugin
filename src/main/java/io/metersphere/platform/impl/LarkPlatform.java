@@ -1,6 +1,7 @@
 package io.metersphere.platform.impl;
 
 //import Lincense.CheckLicense;
+//import io.metersphere.base.domain.IssuesWithBLOBs;
 import io.metersphere.base.domain.IssuesWithBLOBs;
 import io.metersphere.platform.commons.FieldTypeMapping;
 import io.metersphere.platform.constants.CustomFieldType;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class LarkPlatform extends AbstractPlatform {
@@ -54,12 +56,12 @@ public class LarkPlatform extends AbstractPlatform {
         List<DemandDTO> demandDTOS = new ArrayList<>();
         for(LarkWorkItemInfo item : larkWorkItemInfos){
             if(StringUtils.equals(item.getId()+"", lpc.getDemandId())){
-                demandDTOS.add(larkWrokItemToDemands(item));
+                demandDTOS.add(larkWorkItemToDemands(item));
             }
         }
         return demandDTOS;
     }
-    private DemandDTO larkWrokItemToDemands(LarkWorkItemInfo larkWorkItemInfo){
+    private DemandDTO larkWorkItemToDemands(LarkWorkItemInfo larkWorkItemInfo){
         DemandDTO demandDTO = new DemandDTO();
         demandDTO.setId(larkWorkItemInfo.getMSId());
         demandDTO.setName(larkWorkItemInfo.getName());
@@ -145,11 +147,11 @@ public class LarkPlatform extends AbstractPlatform {
             //婚礼纪以需求去分项目，非标，个性化的
 //            List<String> spaceIds = larkAbstractClient.getWorkSpaceIdList();
             LarkWorkItemRequest larkWorkItemRequest = new LarkWorkItemRequest(Arrays.asList("story"));
-            larkWorkItemRequest.setWork_item_ids(Arrays.asList(Integer.parseInt(larkProjectConfig.getDemandId())));
+            larkWorkItemRequest.setWork_item_ids(Arrays.asList(new Long[]{Long.valueOf(Long.parseLong(larkProjectConfig.getDemandId()))}));
             List<LarkWorkItemInfo> larkWorkItemInfos = larkAbstractClient.getWorkItemAll(larkWorkItemRequest);
             List<String> strings = new ArrayList<>();
             for(LarkWorkItemInfo item : larkWorkItemInfos){
-                strings.add(item.getId()+"");
+                strings.add(String.valueOf(item.getId()));
             }
             if(!strings.contains(larkProjectConfig.getDemandId())){
                 MSPluginException.throwException("无效的需求id");
@@ -328,7 +330,7 @@ public class LarkPlatform extends AbstractPlatform {
                 for(LarkFieldValuePairs lfvp: larkFieldValuePairs){
                     try{
                         if(StringUtils.equals(lfvp.getField_type_key(), "work_item_related_select")){
-                            if(!StringUtils.equals(lfvp.getField_value()+"", demandId)){
+                            if(!StringUtils.equals(String.valueOf(lfvp.getField_value()), demandId)){
                                 temp.add(item);
                                 break;
                             }
@@ -406,11 +408,11 @@ public class LarkPlatform extends AbstractPlatform {
             larkUserInfos = larkAbstractClient.getTameUserInfoList();
             LarkProjectConfig lpc = JSON.parseObject(projectConfig, LarkProjectConfig.class);
             LarkWorkItemRequest larkWorkItemRequest = new LarkWorkItemRequest(Arrays.asList("story"));
-            larkWorkItemRequest.setWork_item_ids(Arrays.asList(Integer.parseInt(lpc.getDemandId())));
+            larkWorkItemRequest.setWork_item_ids(Arrays.asList(new Long[]{Long.valueOf(Long.parseLong(lpc.getDemandId()))}));
             List<LarkWorkItemInfo> larkWorkItemInfos = larkAbstractClient.getWorkItemAll(larkWorkItemRequest);
             for(LarkWorkItemInfo item : larkWorkItemInfos){
-                if(StringUtils.equals(item.getId()+"", lpc.getDemandId())){
-                    demandDTOS.add(larkWrokItemToDemands(item));
+                if(StringUtils.equals(String.valueOf(item.getId()), lpc.getDemandId())){
+                    demandDTOS.add(larkWorkItemToDemands(item));
                 }
             }
 
@@ -604,7 +606,8 @@ public class LarkPlatform extends AbstractPlatform {
             System.out.println("get work Item size:"+syncIssuesResult.getUpdateIssues().size());
             syncIssuesResult.getUpdateIssues().addAll(syncIssuesResult.getAddIssues());
             HashMap<Object, Object> syncParam = buildSyncAllParam(syncIssuesResult);
-            syncRequest.getHandleSyncFunc().accept(syncParam);
+            Consumer<Map> hsf = syncRequest.getHandleSyncFunc();
+            hsf.accept(syncParam);
             System.out.println("syncAllIssues dome add Issues size:"+syncIssuesResult.getAddIssues().size()
             +" update Issues size:"+syncIssuesResult.getUpdateIssues().size()
             +" all ids size:"+syncIssuesResult.getAllIds().size()
@@ -636,7 +639,7 @@ public class LarkPlatform extends AbstractPlatform {
             } else {
                 long createTimeMills = 0;
                 try {
-                    createTimeMills = Long.parseLong(item.get("createTime")+"");
+                    createTimeMills = Long.parseLong(String.valueOf(item.get("createTime")));
                     if (syncRequest.isPre()) {
                         return createTimeMills <= syncRequest.getCreateTime().longValue();
                     } else {

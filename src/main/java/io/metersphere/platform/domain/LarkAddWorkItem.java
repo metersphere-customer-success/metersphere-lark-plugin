@@ -1,6 +1,5 @@
 package io.metersphere.platform.domain;
 
-import com.alibaba.fastjson2.JSONArray;
 import io.metersphere.plugin.utils.JSON;
 import lombok.Data;
 import lombok.Getter;
@@ -149,7 +148,7 @@ public class LarkAddWorkItem {
                 @Setter
                 class MultiSelectValue{private Object value;}
                 List<MultiSelectValue> multiSelectList = new ArrayList<>();
-                List<String> multiSelectValueList = JSON.parseArray(item.getValue()+"",String.class);
+                List<String> multiSelectValueList = JSON.parseArray(String.valueOf(item.getValue()),String.class);
                 for(String str : multiSelectValueList){
                     MultiSelectValue multiSelectValue = new MultiSelectValue();
                     multiSelectValue.setValue(str);
@@ -161,25 +160,25 @@ public class LarkAddWorkItem {
                 List<String> temp = new ArrayList<>();
                 //飞书的bug特殊处理一下
                 if(StringUtils.equals("issue_operator", item.getCustomData()) || StringUtils.equals("issue_reporter", item.getCustomData())){
-                    temp.add(item.getValue()+"");
+                    temp.add(String.valueOf(item.getValue()));
                     larkFieldValuePairs.setField_value(temp);
                     break;
                 }
-                temp = JSON.parseArray(item.getValue()+"");
+                temp = JSON.parseArray(String.valueOf(item.getValue()));
                 larkFieldValuePairs.setField_value(temp);
                 break;
             case "work_item_related_select":
-                String msid = item.getValue()+"";
+                String msid = String.valueOf(item.getValue());
                 key = msid.split("_");
-                larkFieldValuePairs.setField_value(Integer.parseInt(key[1]));
+                larkFieldValuePairs.setField_value(Long.parseLong(key[1]));
                 break;
             default:
                 larkFieldValuePairs.setField_value(item.getValue());
                 if(StringUtils.equals(item.getCustomData(), "name")){
-                    data.setTitle(item.getValue()+"");
+                    data.setTitle(String.valueOf(item.getValue()));
 //                    this.name = item.getValue()+"";
                 } else if(StringUtils.equals(item.getCustomData(), "description")){
-                    data.setDescription(item.getValue()+"");
+                    data.setDescription(String.valueOf(item.getValue()));
                 }
         }
     }

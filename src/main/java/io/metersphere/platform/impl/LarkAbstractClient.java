@@ -158,7 +158,7 @@ public class LarkAbstractClient extends BaseClient {
         for(String key : projectDetail.keySet()){
             Object value = projectDetail.get(key);
             Map<String, Object> pd = JSON.parseMap(JSON.toJSONString(value));
-            SelectOption selectOption = new SelectOption(pd.get("name")+"", pd.get("project_key")+"");
+            SelectOption selectOption = new SelectOption(String.valueOf(pd.get("name")), String.valueOf(pd.get("project_key")));
             selectOptions.add(selectOption);
         }
         return selectOptions;
@@ -327,8 +327,10 @@ public class LarkAbstractClient extends BaseClient {
                     tempUserList.add(userIdList.get(Integer.parseInt(si+""+index)));
                 }
             }
-            larkUserInfos.addAll(getUserInfo(tempUserList));
             si++;
+            if (tempUserList != null && tempUserList.size () != 0){
+                larkUserInfos.addAll(getUserInfo(tempUserList));
+            }
         }
         return larkUserInfos;
     }
@@ -422,7 +424,7 @@ public class LarkAbstractClient extends BaseClient {
 
         for(LarkFieldValuePairs item : larkAddWorkItem.getField_value_pairs()){
             if(StringUtils.equals(item.getField_key(),"name")) {
-                larkAddWorkItem.setName(item.getField_value()+"");
+                larkAddWorkItem.setName(String.valueOf(item.getField_value()));
                 larkAddWorkItem.getField_value_pairs().remove(item);
                 break;
             }
@@ -473,7 +475,8 @@ public class LarkAbstractClient extends BaseClient {
         issues.setPlatformId(SPACEID+"_"+larkResponseBase.getDataStr());
         issues.setId(SPACEID+"_"+larkResponseBase.getDataStr());
         LarkWorkItemRequest larkWorkItemRequest = new LarkWorkItemRequest(Arrays.asList("issue"));
-        larkWorkItemRequest.setWork_item_ids(Arrays.asList(Integer.parseInt(larkResponseBase.getDataStr())));
+        larkWorkItemRequest.setWork_item_ids(Arrays.asList(Long
+                .valueOf(larkResponseBase.getDataStr())));
 
         List<LarkWorkItemInfo> larkWorkItemInfos = null;
         for(int i = 0; i < 10 ; i++){
@@ -628,7 +631,7 @@ public class LarkAbstractClient extends BaseClient {
         }
         IssuesWithBLOBs issues = issuesRequest;
         LarkWorkItemRequest larkWorkItemRequest = new LarkWorkItemRequest(Arrays.asList("issue"));
-        larkWorkItemRequest.setWork_item_ids(Arrays.asList(Integer.parseInt(key[1])));
+        larkWorkItemRequest.setWork_item_ids(Arrays.asList(Long.valueOf(key[1])));
         List<LarkWorkItemInfo> larkWorkItemInfos = getWorkItem(larkWorkItemRequest);
         if(larkWorkItemInfos.size() != 1) {
             MSPluginException.throwException("添加缺陷失败，获取缺陷异常："+JSON.toJSONString(larkWorkItemInfos));

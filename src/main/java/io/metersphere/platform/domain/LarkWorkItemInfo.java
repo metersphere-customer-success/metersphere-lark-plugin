@@ -188,7 +188,7 @@ public class LarkWorkItemInfo {
             case "work_item_template":
                 String str = JSON.toJSONString(larkFieldValuePairs.getField_value());
                 Map<String, Integer> templateMap = JSON.parseMap(str);
-                item.setValue(templateMap.get("id")+"");
+                item.setValue(String.valueOf(templateMap.get("id")));
                 break;
             case "work_item_related_select":
                 item.setValue(getProject_key()+"_"+larkFieldValuePairs.getField_value()+"");
@@ -205,7 +205,7 @@ public class LarkWorkItemInfo {
                 break;
             default:
                 if(StringUtils.equals(item.getCustomData(), "description")){
-                    issues.setDescription(larkFieldValuePairs.getField_value() + "");
+                    issues.setDescription(String.valueOf(larkFieldValuePairs.getField_value() ));
                 }
                 item.setValue(larkFieldValuePairs.getField_value());
         }
