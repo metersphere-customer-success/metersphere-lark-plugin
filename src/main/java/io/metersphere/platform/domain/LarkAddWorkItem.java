@@ -121,7 +121,7 @@ public class LarkAddWorkItem {
             case "vote_option_multi":
                 Map<String,Object> tempMap = new HashMap<>();
                 List<Object> list = new ArrayList<>();
-                List<String> valueList = JSON.parseArray(item.getValue()+"",String.class);
+                List<String> valueList = JSON.parseArray(String.valueOf(item.getValue()),String.class);
                 @Getter
                 @Setter
                 class TempClass{private String key,tip="";}
